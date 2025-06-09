@@ -1,3 +1,34 @@
+<?php
+// DB connection parameters - set according to environment
+$host = 'localhost';
+$db   = 'knury'; // assuming db name is knury
+$user = 'root';
+$pass = ''; // change as needed
+$charset = 'utf8mb4';
+
+// DSN and options for PDO
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+
+try {
+    $pdo = new PDO($dsn, $user, $pass, $options);
+} catch (\PDOException $e) {
+    exit('Database connection failed.');
+}
+
+// Fetch roster players
+$stmtRoster = $pdo->query("SELECT * FROM players WHERE team_role = 'roster' ORDER BY id ASC");
+$rosterPlayers = $stmtRoster->fetchAll();
+
+// Fetch bench players
+$stmtBench = $pdo->query("SELECT * FROM players WHERE team_role = 'bench' ORDER BY id ASC");
+$benchPlayers = $stmtBench->fetchAll();
+
+?>
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -196,6 +227,19 @@
     transition: width 0.5s ease;
     box-shadow: 0 0 8px #22c55e;
   }
+  /* Scale line for skill bars */
+  .scale-line {
+    font-size: 0.85rem;
+    color: #4ade80;
+    margin-top: 4px;
+    display: flex;
+    justify-content: space-between;
+    user-select: none;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-shadow: 0 0 3px #22c55e;
+  }
+
   /* BENCH PLAYER CARD */
   .bench-player-card {
     background: #1f1f1f;
@@ -286,6 +330,60 @@
   .player-details strong {
     color: #22c55e;
   }
+
+  /* FOOTER */
+  footer {
+    background-color: #121212;
+    border-top: 4px solid #22c55e;
+    margin-top: auto;
+    box-shadow: 0 -3px 8px rgba(34, 197, 94, 0.4);
+  }
+  .footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .discord-button {
+    background: #5865f2;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0 0 10px #5865f2aa;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none;
+    justify-content: center;
+    width: fit-content;
+  }
+  .discord-button:hover,
+  .discord-button:focus {
+    background: #4752c4;
+    box-shadow: 0 0 18px #4752c4cc;
+    outline: none;
+  }
+  .discord-button svg {
+    width: 22px;
+    height: 22px;
+    margin-right: 8px;
+    fill: white;
+  }
+  .footer-copyright {
+    margin-top: 12px;
+    font-size: 0.9rem;
+    color: #94a3b8;
+    user-select: none;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+  }
 </style>
 </head>
 <body>
@@ -294,155 +392,124 @@
     <a href="logowanie.php" class="login-button" aria-label="Przejdź do logowania">Logowanie</a>
   </header>
 
-  <div class="nav-tabs">
-    <button class="tab-button active" onclick="showTab('roster')">Skład</button>
-    <button class="tab-button" onclick="showTab('bench')">Ławka</button>
-    <button class="tab-button" onclick="showTab('matches')">Mecze</button>
+  <div class="nav-tabs" role="tablist" aria-label="Nawigacja zespołu">
+    <button class="tab-button active" role="tab" aria-selected="true" aria-controls="roster" id="tab-roster" onclick="showTab('roster')">Skład</button>
+    <button class="tab-button" role="tab" aria-selected="false" aria-controls="bench" id="tab-bench" onclick="showTab('bench')">Ławka</button>
+    <button class="tab-button" role="tab" aria-selected="false" aria-controls="matches" id="tab-matches" onclick="showTab('matches')">Mecze</button>
   </div>
 
   <div class="container">
     <div id="roster" class="tab-content">
       <div class="team-title">Skład drużyny</div>
       <div class="player-grid">
-
-        <div class="player-card" data-map="Dust2" data-weapon="AWP" onclick="toggleDetails(this)">
-          <h2>SimplyKubuS-</h2>
-          <p>Wiek: 15 lat</p>
-          <p><strong>Rola:</strong> 🎯 AWPer</p>
-          <p><strong>Rating 2.0:</strong> 1.33</p>
-          <div class="faceit-level">💎 lvl7</div>
-          <p><strong>K/D:</strong> 1.34 | <strong>ADR:</strong> 93.4 | <strong>KPR:</strong> 0.91</p>
-          <p><strong>DPR:</strong> 0.68 | <strong>KAST:</strong> 71.7%</p>
-          <div class="skills">
-            <div class="skill"><span>Firepower</span><div class="bar"><div class="fill" style="width: 90%;"></div></div></div>
-            <div class="skill"><span>Entry</span><div class="bar"><div class="fill" style="width: 75%;"></div></div></div>
-            <div class="skill"><span>Opening</span><div class="bar"><div class="fill" style="width: 80%;"></div></div></div>
-            <div class="skill"><span>Sniping</span><div class="bar"><div class="fill" style="width: 85%;"></div></div></div>
-            <div class="skill"><span>Clutching</span><div class="bar"><div class="fill" style="width: 70%;"></div></div></div>
-            <div class="skill"><span>Utility</span><div class="bar"><div class="fill" style="width: 65%;"></div></div></div>
+        <?php foreach ($rosterPlayers as $player): ?>
+          <div class="player-card" data-map="<?=htmlspecialchars($player['favorite_map'])?>" data-weapon="<?=htmlspecialchars($player['favorite_weapon'])?>" onclick="toggleDetails(this)" tabindex="0">
+            <h2><?=htmlspecialchars($player['nickname'])?></h2>
+            <p>Wiek: <?=htmlspecialchars($player['age'])?> lat</p>
+            <p><strong>Rola:</strong>
+              <?php
+                $role = htmlspecialchars($player['role']);
+                $emoji = '';
+                if (stripos($role, 'awper') !== false) $emoji = '🎯';
+                else if (stripos($role, 'riffler') !== false) $emoji = '🛡️';
+                else if (stripos($role, 'igl') !== false) $emoji = '🧠';
+                else if (stripos($role, 'entry') !== false) $emoji = '🚪';
+                else if (stripos($role, 'coach') !== false) $emoji = '🎓';
+                else $emoji = '🎮';
+                echo $emoji . ' ' . $role;
+              ?>
+            </p>
+            <p><strong>Rating 2.0:</strong> <?=htmlspecialchars($player['rating'] ?? '-')?></p>
+            <div class="faceit-level">
+              <?php
+                $lvlIcon = '';
+                $lvl = (int)($player['faceit_level'] ?? 0);
+                if ($lvl >= 7) $lvlIcon = '💎';
+                else if ($lvl >= 4) $lvlIcon = '⭐';
+                else if ($lvl > 0) $lvlIcon = '🔷';
+                else $lvlIcon = '';
+                if ($lvlIcon !== '') {
+                    echo $lvlIcon . ' lvl' . $lvl;
+                } else {
+                    echo '-';
+                }
+              ?>
+            </div>
+            <p>
+              <strong>K/D:</strong> <?=htmlspecialchars($player['kd_ratio'] ?? '-')?> |
+              <strong>ADR:</strong> <?=htmlspecialchars($player['adr'] ?? '-')?> |
+              <strong>KPR:</strong> <?=htmlspecialchars($player['kpr'] ?? '-')?>
+            </p>
+            <p>
+              <strong>DPR:</strong> <?=htmlspecialchars($player['dpr'] ?? '-')?> |
+              <strong>KAST:</strong> <?=htmlspecialchars($player['kast'] ?? '-')?>%
+            </p>
+            <div class="skills">
+              <?php
+                $skills = json_decode($player['skills_json'] ?? '{}', true);
+                foreach ($skills as $skillName => $skillValue):
+              ?>
+                <div class="skill">
+                  <span><?=htmlspecialchars($skillName)?></span>
+                  <div class="bar"><div class="fill" style="width: <?=intval($skillValue)?>%;"></div></div>
+                  <div class="scale-line"><div>0</div><div>100</div></div>
+                </div>
+              <?php endforeach; ?>
+            </div>
+            <div class="player-details" style="display:none;"></div>
           </div>
-          <!-- szczegóły ukryte -->
-          <div class="player-details" style="display:none;"></div>
-        </div>
-
-        <div class="player-card" data-map="Mirage" data-weapon="M4A1-S" onclick="toggleDetails(this)">
-          <h2>Suv1337</h2>
-          <p>Wiek: 15 lat</p>
-          <p><strong>Rola:</strong> 🛡️ Riffler / Support</p>
-          <p><strong>Rating 2.0:</strong> 1.23</p>
-          <div class="faceit-level">💎 lvl7</div>
-          <p><strong>K/D:</strong> 1.22 | <strong>ADR:</strong> 88.7 | <strong>KPR:</strong> 0.83</p>
-          <p><strong>DPR:</strong> 0.68 | <strong>KAST:</strong> 69.5%</p>
-          <div class="skills">
-            <div class="skill"><span>Firepower</span><div class="bar"><div class="fill" style="width: 82%;"></div></div></div>
-            <div class="skill"><span>Entry</span><div class="bar"><div class="fill" style="width: 70%;"></div></div></div>
-            <div class="skill"><span>Opening</span><div class="bar"><div class="fill" style="width: 75%;"></div></div></div>
-            <div class="skill"><span>Sniping</span><div class="bar"><div class="fill" style="width: 65%;"></div></div></div>
-            <div class="skill"><span>Clutching</span><div class="bar"><div class="fill" style="width: 60%;"></div></div></div>
-            <div class="skill"><span>Utility</span><div class="bar"><div class="fill" style="width: 60%;"></div></div></div>
-          </div>
-          <div class="player-details" style="display:none;"></div>
-        </div>
-
-        <div class="player-card" data-map="Inferno" data-weapon="AK-47" onclick="toggleDetails(this)">
-          <h2>Wayferr</h2>
-          <p>Wiek: 16 lat</p>
-          <p><strong>Rola:</strong> 🧠 IGL</p>
-          <p><strong>Rating 2.0:</strong> 0.99</p>
-          <div class="faceit-level">🔷 lvl6</div>
-          <p><strong>K/D:</strong> 0.96 | <strong>ADR:</strong> 76.4 | <strong>KPR:</strong> 0.70</p>
-          <p><strong>DPR:</strong> 0.75 | <strong>KAST:</strong> 62.4%</p>
-          <div class="skills">
-            <div class="skill"><span>Firepower</span><div class="bar"><div class="fill" style="width: 65%;"></div></div></div>
-            <div class="skill"><span>Entry</span><div class="bar"><div class="fill" style="width: 55%;"></div></div></div>
-            <div class="skill"><span>Opening</span><div class="bar"><div class="fill" style="width: 55%;"></div></div></div>
-            <div class="skill"><span>Sniping</span><div class="bar"><div class="fill" style="width: 45%;"></div></div></div>
-            <div class="skill"><span>Clutching</span><div class="bar"><div class="fill" style="width: 60%;"></div></div></div>
-            <div class="skill"><span>Utility</span><div class="bar"><div class="fill" style="width: 60%;"></div></div></div>
-          </div>
-          <div class="player-details" style="display:none;"></div>
-        </div>
-
-        <!-- wikokk1 -->
-        <div class="player-card" data-map="Nuke" data-weapon="Galil" onclick="toggleDetails(this)">
-          <h2>wikokk1</h2>
-          <p>Wiek: 16 lat</p>
-          <p><strong>Rola:</strong> 🛡️ Riffler / Support</p>
-          <p><strong>Rating 2.0:</strong> 0.50</p>
-          <div class="faceit-level">⭐ lvl2</div>
-          <p><strong>K/D:</strong> 0.52 | <strong>ADR:</strong> 52.3 | <strong>KPR:</strong> 0.45</p>
-          <p><strong>DPR:</strong> 0.86 | <strong>KAST:</strong> 44.9%</p>
-          <div class="skills">
-            <div class="skill"><span>Firepower</span><div class="bar"><div class="fill" style="width: 35%;"></div></div></div>
-            <div class="skill"><span>Entry</span><div class="bar"><div class="fill" style="width: 40%;"></div></div></div>
-            <div class="skill"><span>Opening</span><div class="bar"><div class="fill" style="width: 30%;"></div></div></div>
-            <div class="skill"><span>Sniping</span><div class="bar"><div class="fill" style="width: 10%;"></div></div></div>
-            <div class="skill"><span>Clutching</span><div class="bar"><div class="fill" style="width: 30%;"></div></div></div>
-            <div class="skill"><span>Utility</span><div class="bar"><div class="fill" style="width: 50%;"></div></div></div>
-          </div>
-          <div class="player-details" style="display:none;"></div>
-        </div>
-
-        <!-- Divsero -->
-        <div class="player-card" data-map="Train" data-weapon="FAMAS" onclick="toggleDetails(this)">
-          <h2>Divsero</h2>
-          <p>Wiek: 16 lat</p>
-          <p><strong>Rola:</strong> 🚪 Entry Fragger</p>
-          <p><strong>Rating 2.0:</strong> 0.90</p>
-          <div class="faceit-level">⭐ lvl3</div>
-          <p><strong>K/D:</strong> 0.91 | <strong>ADR:</strong> 72.0 | <strong>KPR:</strong> 0.67</p>
-          <p><strong>DPR:</strong> 0.77 | <strong>KAST:</strong> 57.4%</p>
-          <div class="skills">
-            <div class="skill"><span>Firepower</span><div class="bar"><div class="fill" style="width: 75%;"></div></div></div>
-            <div class="skill"><span>Entry</span><div class="bar"><div class="fill" style="width: 80%;"></div></div></div>
-            <div class="skill"><span>Opening</span><div class="bar"><div class="fill" style="width: 70%;"></div></div></div>
-            <div class="skill"><span>Sniping</span><div class="bar"><div class="fill" style="width: 15%;"></div></div></div>
-            <div class="skill"><span>Clutching</span><div class="bar"><div class="fill" style="width: 45%;"></div></div></div>
-            <div class="skill"><span>Utility</span><div class="bar"><div class="fill" style="width: 50%;"></div></div></div>
-          </div>
-          <div class="player-details" style="display:none;"></div>
-        </div>
-
-        <!-- Gawlaswp -->
-        <div class="player-card" data-map="Overpass" data-weapon="Desert Eagle" onclick="toggleDetails(this)">
-          <h2>Gawlaswp</h2>
-          <p>Wiek: 15 lat</p>
-          <p><strong>Rola:</strong> 🎓 Coach</p>
-          <p><strong>Rating 2.0:</strong> -</p>
-          <p><strong>K/D:</strong> - | <strong>ADR:</strong> - | <strong>KPR:</strong> -</p>
-          <p><strong>DPR:</strong> - | <strong>KAST:</strong> -</p>
-          <div class="skills">
-            <div class="skill"><span>Strategia</span><div class="bar"><div class="fill" style="width: 85%;"></div></div></div>
-            <div class="skill"><span>Motywacja</span><div class="bar"><div class="fill" style="width: 80%;"></div></div></div>
-            <div class="skill"><span>Analiza</span><div class="bar"><div class="fill" style="width: 90%;"></div></div></div>
-          </div>
-          <div class="player-details" style="display:none;"></div>
-        </div>
-
+        <?php endforeach; ?>
       </div>
     </div>
 
     <div id="bench" class="tab-content hidden">
       <div class="team-title">Ławka rezerwowych</div>
       <div class="bench-grid">
-       <div class="player-card" data-map="Mirage" data-weapon="AK-47" onclick="toggleDetails(this)">
-          <h2>Byczeq222</h2>
-          <p>Wiek: 17 lat</p>
-          <p><strong>Rola:</strong>🚪 Entry Fragger</p>
-          <p><strong>Rating 2.0:</strong> 0.82</p>
-          <div class="faceit-level">⭐ lvl4</div>
-          <p><strong>K/D:</strong> 0.75 | <strong>ADR:</strong> 66.1 | <strong>KPR:</strong> 0.59</p>
-          <p><strong>DPR:</strong> 0.77 | <strong>KAST:</strong> 57.6%</p>
-          <div class="skills">
-            <div class="skill"><span>Firepower</span><div class="bar"><div class="fill" style="width: 75%;"></div></div></div>
-            <div class="skill"><span>Entry</span><div class="bar"><div class="fill" style="width: 80%;"></div></div></div>
-            <div class="skill"><span>Opening</span><div class="bar"><div class="fill" style="width: 70%;"></div></div></div>
-            <div class="skill"><span>Sniping</span><div class="bar"><div class="fill" style="width: 15%;"></div></div></div>
-            <div class="skill"><span>Clutching</span><div class="bar"><div class="fill" style="width: 45%;"></div></div></div>
-            <div class="skill"><span>Utility</span><div class="bar"><div class="fill" style="width: 50%;"></div></div></div>
+        <?php foreach ($benchPlayers as $player): ?>
+          <div class="player-card" data-map="<?=htmlspecialchars($player['favorite_map'])?>" data-weapon="<?=htmlspecialchars($player['favorite_weapon'])?>" onclick="toggleDetails(this)" tabindex="0">
+            <h2><?=htmlspecialchars($player['nickname'])?></h2>
+            <p>Wiek: <?=htmlspecialchars($player['age'])?> lat</p>
+            <p><strong>Rola:</strong> <?=htmlspecialchars($player['role'])?></p>
+            <p><strong>Rating 2.0:</strong> <?=htmlspecialchars($player['rating'] ?? '-')?></p>
+            <div class="faceit-level">
+              <?php
+                $lvlIcon = '';
+                $lvl = (int)($player['faceit_level'] ?? 0);
+                if ($lvl >= 7) $lvlIcon = '💎';
+                else if ($lvl >= 4) $lvlIcon = '⭐';
+                else if ($lvl > 0) $lvlIcon = '🔷';
+                else $lvlIcon = '';
+                if ($lvlIcon !== '') {
+                    echo $lvlIcon . ' lvl' . $lvl;
+                } else {
+                    echo '-';
+                }
+              ?>
+            </div>
+            <p>
+              <strong>K/D:</strong> <?=htmlspecialchars($player['kd_ratio'] ?? '-')?> |
+              <strong>ADR:</strong> <?=htmlspecialchars($player['adr'] ?? '-')?> |
+              <strong>KPR:</strong> <?=htmlspecialchars($player['kpr'] ?? '-')?>
+            </p>
+            <p>
+              <strong>DPR:</strong> <?=htmlspecialchars($player['dpr'] ?? '-')?> |
+              <strong>KAST:</strong> <?=htmlspecialchars($player['kast'] ?? '-')?>%
+            </p>
+            <div class="skills">
+              <?php
+                $skills = json_decode($player['skills_json'] ?? '{}', true);
+                foreach ($skills as $skillName => $skillValue):
+              ?>
+                <div class="skill">
+                  <span><?=htmlspecialchars($skillName)?></span>
+                  <div class="bar"><div class="fill" style="width: <?=intval($skillValue)?>%;"></div></div>
+                  <div class="scale-line"><div>0</div><div>100</div></div>
+                </div>
+              <?php endforeach; ?>
+            </div>
+            <div class="player-details" style="display:none;"></div>
           </div>
-          <div class="player-details" style="display:none;"></div>
-        </div>
+        <?php endforeach; ?>
       </div>
     </div>
 
@@ -451,6 +518,19 @@
       <p>Brak danych o nadchodzących meczach.</p>
     </div>
   </div>
+
+  <footer>
+    <div class="footer-container">
+      <a href="https://discord.com/invite/jtn5tqFCjD" target="_blank" rel="noopener noreferrer" class="discord-button" aria-label="Dołącz do Discorda Mocne Knury Esport">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M20.317 4.3698a19.791 19.791 0 0 0-4.8851-1.5152.0741.0741 0 0 0-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3923-.4058-.8742-.6177-1.2495a.077.077 0 0 0-.0785-.037 19.736 19.736 0 0 0-4.8852 1.515.0699.0699 0 0 0-.0321.0277C2.13 9.0458 1.367 13.579 1.8384 18.057a.0824.0824 0 0 0 .0312.0561 19.9 19.9 0 0 0 5.993 3.04.0777.0777 0 0 0 .0842-.0276c.4626-.63.8731-1.2952 1.226-1.9942a.076.076 0 0 0-.0416-.1057 13.14 13.14 0 0 1-1.872-.888.077.077 0 0 1-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 0 1 .0776-.01c3.927 1.793 8.18 1.793 12.061 0a.0739.0739 0 0 1 .0785.0099c.12.099.246.198.372.292a.0766.0766 0 0 1-.006.1276 12.55 12.55 0 0 1-1.873.888.0766.0766 0 0 0-.0407.106c.3604.698.771 1.363 1.233 1.9938a.076.076 0 0 0 .0842.028 19.876 19.876 0 0 0 6.002-3.043.082.082 0 0 0 .03-.055c.5-5.177-.838-9.673-3.548-13.66a.061.061 0 0 0-.0312-.0286Z" fill="currentColor"/>
+          <path d="M8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1852 1.0952 2.1568 2.4189 0 1.3333-.9555 2.419-2.1569 2.419Zm7.9748 0c-1.1824 0-2.1568-1.0857-2.1568-2.419 0-1.3332.9554-2.4189 2.1568-2.4189 1.2109 0 2.1853 1.0952 2.157 2.4189 0 1.3333-.9461 2.419-2.157 2.419Z" fill="white"/>
+        </svg>
+        Discord
+      </a>
+      <div class="footer-copyright">Copyright 2025 MocneKnury.</div>
+    </div>
+  </footer>
 
 <script>
   // Przełączanie tabów
@@ -487,3 +567,4 @@
 </script>
 </body>
 </html>
+
