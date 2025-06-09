@@ -1,33 +1,43 @@
 <?php
-// DB connection parameters - set according to environment
-$host = 'localhost';
-$db   = 'knury'; // assuming db name is knury
-$user = 'root';
-$pass = ''; // change as needed
-$charset = 'utf8mb4';
+// Supabase REST API config
+$project_url = 'https://wfevbeddepuzwbrdhyen.supabase.co';
+$api_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndmZXZiZWRkZXB1endicmRoeWVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1MDUzNTMsImV4cCI6MjA2NTA4MTM1M30.feV4vn3-XVgQwLtJy_EDJR_rQyy1Ny3pue6SGN_Ls10';
 
-// DSN and options for PDO
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
-];
+function fetchPlayers($project_url, $api_key, $role) {
+    $url = $project_url . "/rest/v1/players?team_role=eq." . $role . "&order=id.asc";
+    $headers = [
+        "apikey: {$api_key}",
+        "Authorization: Bearer {$api_key}",
+        "Accept: application/json"
+    ];
 
-try {
-    $pdo = new PDO($dsn, $user, $pass, $options);
-} catch (\PDOException $e) {
-    exit('Database connection failed.');
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    $response = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+    curl_close($ch);
+
+    if ($http_code != 200) {
+        return [];
+    }
+    $data = json_decode($response, true);
+    if (!is_array($data)) return [];
+    return $data;
 }
 
-// Fetch roster players
-$stmtRoster = $pdo->query("SELECT * FROM players WHERE team_role = 'roster' ORDER BY id ASC");
-$rosterPlayers = $stmtRoster->fetchAll();
+$rosterPlayers = fetchPlayers($project_url, $api_key, 'roster');
+$benchPlayers = fetchPlayers($project_url, $api_key, 'bench');
 
-// Fetch bench players
-$stmtBench = $pdo->query("SELECT * FROM players WHERE team_role = 'bench' ORDER BY id ASC");
-$benchPlayers = $stmtBench->fetchAll();
-
+function safeDecodeSkills($skills_json) {
+    if (is_array($skills_json)) {
+        return $skills_json;
+    }
+    if (is_string($skills_json)) {
+        return json_decode($skills_json, true) ?? [];
+    }
+    return [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="pl">
@@ -446,7 +456,7 @@ $benchPlayers = $stmtBench->fetchAll();
             </p>
             <div class="skills">
               <?php
-                $skills = json_decode($player['skills_json'] ?? '{}', true);
+                $skills = safeDecodeSkills($player['skills_json'] ?? '{}');
                 foreach ($skills as $skillName => $skillValue):
               ?>
                 <div class="skill">
@@ -497,7 +507,7 @@ $benchPlayers = $stmtBench->fetchAll();
             </p>
             <div class="skills">
               <?php
-                $skills = json_decode($player['skills_json'] ?? '{}', true);
+                $skills = safeDecodeSkills($player['skills_json'] ?? '{}');
                 foreach ($skills as $skillName => $skillValue):
               ?>
                 <div class="skill">
@@ -567,4 +577,3 @@ $benchPlayers = $stmtBench->fetchAll();
 </script>
 </body>
 </html>
-

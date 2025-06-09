@@ -1,37 +1,61 @@
 <?php
-// DB connection parameters
-$host = 'localhost';
-$db   = 'knury';
-$user = 'root';
-$pass = '';  // Adjust accordingly
-$charset = 'utf8mb4';
+// Supabase configuration
+$supabase_url = 'https://wfevbeddepuzwbrdhyen.supabase.co/rest/v1/players';
+$supabase_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndmZXZiZWRkZXB1endicmRoeWVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1MDUzNTMsImV4cCI6MjA2NTA4MTM1M30.feV4vn3-XVgQwLtJy_EDJR_rQyy1Ny3pue6SGN_Ls10';
 
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
-];
+// Function to call Supabase REST API with cURL
+function supabase_request($method, $url, $key, $body = null) {
+    $curl = curl_init();
 
-try {
-    $pdo = new PDO($dsn, $user, $pass, $options);
-} catch (\PDOException $e) {
-    exit('Database connection failed.');
+    $headers = [
+        "apikey: $key",
+        "Authorization: Bearer $key",
+        "Content-Type: application/json",
+        "Accept: application/json",
+        "Prefer: return=representation" // To get updated record in response
+    ];
+
+    curl_setopt_array($curl, [
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => $method,
+        CURLOPT_HTTPHEADER => $headers,
+        CURLOPT_FOLLOWLOCATION => true,
+    ]);
+
+    if ($body !== null) {
+        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($body));
+    }
+
+    $response = curl_exec($curl);
+
+    if (curl_errno($curl)) {
+        curl_close($curl);
+        return false;
+    }
+
+    $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+    curl_close($curl);
+
+    return ['status' => $http_code, 'body' => json_decode($response, true)];
 }
 
-// Initialize variables for messages
+// Fetch player Suv1337 data
+$filter = urlencode('nickname=eq.Suv1337');
+$fetch_url = $supabase_url . "?$filter&select=*";
+
+$fetch_result = supabase_request('GET', $fetch_url, $supabase_key);
+
+if (!$fetch_result || $fetch_result['status'] !== 200 || empty($fetch_result['body'])) {
+    exit('Player Suv1337 not found in database or error fetching data.');
+}
+
+$player = $fetch_result['body'][0];
+
+// Initialize messages
 $success = $error = '';
 
-// Fetch Suv1337 data
-$stmt = $pdo->prepare("SELECT * FROM players WHERE nickname = 'Suv1337' LIMIT 1");
-$stmt->execute();
-$player = $stmt->fetch();
-
-if (!$player) {
-    exit('Player Suv1337 not found in database.');
-}
-
-// If form submitted, update data
+// Process POST update
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Sanitize and validate input
     $age = filter_input(INPUT_POST, 'age', FILTER_VALIDATE_INT);
@@ -46,7 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $favorite_map = trim($_POST['favorite_map'] ?? '');
     $favorite_weapon = trim($_POST['favorite_weapon'] ?? '');
 
-    // Skills JSON decode and build from sliders
     $skills = [
         'Firepower' => filter_input(INPUT_POST, 'skill_firepower', FILTER_VALIDATE_INT),
         'Entry' => filter_input(INPUT_POST, 'skill_entry', FILTER_VALIDATE_INT),
@@ -56,56 +79,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'Utility' => filter_input(INPUT_POST, 'skill_utility', FILTER_VALIDATE_INT),
     ];
 
-    // Basic validation
+    // Validation
     if ($age === false || $age < 12 || $age > 100) {
-        $error = 'Wprowadź prawidłowy wiek (12-100).';
+        $error = 'Please enter a valid age (12-100).';
     } elseif ($faceit_level === false || $faceit_level < 0 || $faceit_level > 10) {
-        $error = 'Wprowadź prawidłowy poziom faceit (0-10).';
+        $error = 'Please enter a valid Faceit level (0-10).';
     } else {
-        // Prepare skills JSON
-        $skills_json = json_encode($skills);
+        // Prepare updated data
+        $update_data = [
+            'age' => $age,
+            'role' => $role,
+            'rating' => $rating,
+            'faceit_level' => $faceit_level,
+            'kd_ratio' => $kd_ratio,
+            'adr' => $adr,
+            'kpr' => $kpr,
+            'dpr' => $dpr,
+            'kast' => $kast,
+            'favorite_map' => $favorite_map,
+            'favorite_weapon' => $favorite_weapon,
+            'skills_json' => json_encode($skills)
+        ];
 
-        // Prepare update statement
-        $update = $pdo->prepare("
-            UPDATE players SET
-              age = :age,
-              role = :role,
-              rating = :rating,
-              faceit_level = :faceit_level,
-              kd_ratio = :kd_ratio,
-              adr = :adr,
-              kpr = :kpr,
-              dpr = :dpr,
-              kast = :kast,
-              favorite_map = :favorite_map,
-              favorite_weapon = :favorite_weapon,
-              skills_json = :skills_json
-            WHERE nickname = 'Suv1337'
-        ");
-        try {
-            $update->execute([
-                ':age' => $age,
-                ':role' => $role,
-                ':rating' => $rating,
-                ':faceit_level' => $faceit_level,
-                ':kd_ratio' => $kd_ratio,
-                ':adr' => $adr,
-                ':kpr' => $kpr,
-                ':dpr' => $dpr,
-                ':kast' => $kast,
-                ':favorite_map' => $favorite_map,
-                ':favorite_weapon' => $favorite_weapon,
-                ':skills_json' => $skills_json,
-            ]);
-            $success = 'Dane zostały pomyślnie zaktualizowane.';
-            // Refresh $player data after update
-            $stmt->execute();
-            $player = $stmt->fetch();
-        } catch (Exception $e) {
-            $error = 'Błąd podczas aktualizacji danych.';
+        // Supabase PATCH URL with filter for nickname
+        $patch_url = $supabase_url . "?nickname=eq.Suv1337";
+
+        $patch_result = supabase_request('PATCH', $patch_url, $supabase_key, $update_data);
+
+        if ($patch_result && in_array($patch_result['status'], [200, 204])) {
+            $success = 'Data successfully updated.';
+            // Refresh player data with returned updated record if any
+            if (!empty($patch_result['body'])) {
+                $player = $patch_result['body'][0];
+            } else {
+                // fallback: refetch
+                $fetch_result = supabase_request('GET', $fetch_url, $supabase_key);
+                if ($fetch_result && $fetch_result['status'] === 200 && !empty($fetch_result['body'])) {
+                    $player = $fetch_result['body'][0];
+                }
+            }
+        } else {
+            $error = 'Error occurred updating data.';
         }
     }
 }
+
+
 ?>
 <!DOCTYPE html>
 <html lang="pl">
@@ -312,13 +331,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <label for="favorite_weapon">Ulubiona broń</label>
       <input type="text" id="favorite_weapon" name="favorite_weapon" value="<?=htmlspecialchars($player['favorite_weapon'])?>" />
 
-      <?php
-      // Decode current skills or empty defaults
-      $skills = json_decode($player['skills_json'] ?? '{}', true);
-      $skill_defaults = ['Firepower'=>0,'Entry'=>0,'Opening'=>0,'Sniping'=>0,'Clutching'=>0,'Utility'=>0];
-      $skills = array_merge($skill_defaults, $skills);
-      ?>
-
       <label for="skill_firepower">Firepower</label>
       <div class="slider-container">
         <input type="range" id="skill_firepower" name="skill_firepower" min="0" max="100" value="<?=htmlspecialchars($skills['Firepower'])?>" />
@@ -358,7 +370,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <button type="submit">Zapisz zmiany</button>
     </form>
   </main>
-
 <script>
   // Update slider fill widths dynamically
   function updateFill(slider, fill) {
