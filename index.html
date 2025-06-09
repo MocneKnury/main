@@ -81,6 +81,25 @@
     .hidden {
       display: none;
     }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    input {
+      padding: 10px;
+      border: 1px solid #2f2f2f;
+      border-radius: 4px;
+    }
+    button {
+      padding: 10px;
+      background-color: #22c55e;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -91,6 +110,7 @@
   <div class="nav-tabs">
     <button class="tab-button active" onclick="showTab('roster')">Skład</button>
     <button class="tab-button" onclick="showTab('matches')">Mecze</button>
+    <button class="tab-button" onclick="showTab('login')">Logowanie</button>
   </div>
 
   <div class="container">
@@ -145,15 +165,64 @@
       <div class="team-title">Nadchodzące Mecze</div>
       <p>Brak zaplanowanych meczów. Sprawdź ponownie później!</p>
     </div>
+
+    <div id="login" class="tab-content">
+      <div class="team-title">Logowanie do panelu admina</div>
+      <form id="login-form" onsubmit="return login();">
+        <label for="username">Nazwa użytkownika:</label>
+        <input type="text" id="username" required>
+        <label for="password">Hasło:</label>
+        <input type="password" id="password" required>
+        <button type="submit">Zaloguj się</button>
+      </form>
+    </div>
+
+    <div id="admin-panel" class="tab-content hidden">
+      <div class="team-title">Panel Admina</div>
+      <form id="admin-form" onsubmit="return updateData();">
+        <label for="match">Zmień mecze:</label>
+        <input type="text" id="match" placeholder="Nowy mecz" required>
+        <label for="player-name">Zmień nazwę zawodnika:</label>
+        <input type="text" id="player-name" placeholder="Nowa nazwa zawodnika" required>
+        <button type="submit">Zaktualizuj</button>
+      </form>
+    </div>
   </div>
 
   <script>
+    let isAdmin = false;
+
     function showTab(tabName) {
       document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
       document.getElementById(tabName).classList.remove('hidden');
 
       document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
       document.querySelector(`.tab-button[onclick=\"showTab('${tabName}')\"]`).classList.add('active');
+    }
+
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      // Prosta walidacja (można to rozbudować)
+      if (username === 'admin' && password === 'admin') {
+        isAdmin = true;
+        showTab('admin-panel');
+        return false; // Zapobiega przeładowaniu strony
+      } else {
+        alert('Nieprawidłowa nazwa użytkownika lub hasło.');
+        return false;
+      }
+    }
+
+    function updateData() {
+      const match = document.getElementById('match').value;
+      const playerName = document.getElementById('player-name').value;
+
+      // Logika aktualizacji danych (można to rozbudować)
+      console.log(`Nowy mecz: ${match}, Nowa nazwa zawodnika: ${playerName}`);
+      alert('Dane zostały zaktualizowane.');
+      return false; // Zapobiega przeładowaniu strony
     }
   </script>
 </body>
