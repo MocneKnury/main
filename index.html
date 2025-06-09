@@ -3,122 +3,158 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Drużyna eSportowa - MocneKnury</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <title>Mocne Knury Esport</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Orbitron', sans-serif;
-      background-color: #0d0d0d;
-      color: #f0f0f0;
+      font-family: 'Roboto', sans-serif;
+      background-color: #0f0f0f;
+      color: #e5e5e5;
       margin: 0;
-      padding: 0;
     }
     header {
-      background-color: #1a1a1a;
-      padding: 20px;
-      text-align: center;
+      background-color: #111;
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      border-bottom: 3px solid #22c55e;
     }
     header h1 {
+      font-size: 2rem;
+      color: #22c55e;
       margin: 0;
-      color: #00ffcc;
     }
-    nav {
-      background-color: #111;
-      text-align: center;
-      padding: 10px;
-    }
-    nav a {
-      color: #00ffcc;
-      margin: 0 15px;
-      text-decoration: none;
-    }
-    section {
-      padding: 40px 20px;
-      max-width: 1000px;
-      margin: auto;
-    }
-    .players {
+    .nav-tabs {
       display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
       justify-content: center;
+      margin-top: 20px;
+      gap: 20px;
+    }
+    .nav-tabs button {
+      background: none;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      color: #e5e5e5;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+    }
+    .nav-tabs button.active {
+      border-color: #22c55e;
+      color: #22c55e;
+      font-weight: bold;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .team-title {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      color: #93c5fd;
+      border-bottom: 2px solid #22c55e;
+      padding-bottom: 10px;
+    }
+    .player-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
     }
     .player-card {
-      background-color: #1e1e1e;
+      background-color: #1a1a1a;
+      border: 1px solid #2f2f2f;
+      border-radius: 8px;
       padding: 20px;
-      border-radius: 10px;
-      width: 200px;
-      text-align: center;
+      display: flex;
+      flex-direction: column;
     }
-    .matches li {
-      margin: 10px 0;
+    .player-card h2 {
+      margin: 0 0 10px;
+      font-size: 1.25rem;
+      color: #22c55e;
     }
-    footer {
-      background-color: #111;
-      text-align: center;
-      padding: 20px;
-      font-size: 14px;
+    .player-card p {
+      margin: 4px 0;
+      font-size: 0.95rem;
+    }
+    .hidden {
+      display: none;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>Mocne Knury</h1>
-    <p>Oficjalna strona drużyny eSportowej</p>
+    <h1>Mocne Knury Esport</h1>
   </header>
 
-  <nav>
-    <a href="#about">O nas</a>
-    <a href="#players">Skład</a>
-    <a href="#matches">Mecze</a>
-    <a href="#contact">Kontakt</a>
-  </nav>
+  <div class="nav-tabs">
+    <button class="tab-button active" onclick="showTab('roster')">Skład</button>
+    <button class="tab-button" onclick="showTab('matches')">Mecze</button>
+  </div>
 
-  <section id="about">
-    <h2>O nas</h2>
-    <p>Work in progress...</p>
-  </section>
+  <div class="container">
+    <div id="roster" class="tab-content">
+      <div class="team-title">Skład drużyny</div>
+      <div class="player-grid">
 
-  <section id="players">
-    <h2>Skład</h2>
-    <div class="players">
-      <div class="player-card">
-        <h3>BladeX</h3>
-        <p>Kapitan / Snajper</p>
-      </div>
-      <div class="player-card">
-        <h3>Nova</h3>
-        <p>Strateg / Support</p>
-      </div>
-      <div class="player-card">
-        <h3>Ghost</h3>
-        <p>Entry Fragger</p>
-      </div>
-      <div class="player-card">
-        <h3>Pixel</h3>
-        <p>AWPer / Tactician</p>
+        <div class="player-card">
+          <h2>SimplyKubuS-<small></small></h2>
+          <p>Wiek: 15 lat</p>
+          <p><strong>Rating 2.0:</strong> 1.33</p>
+          <p><strong>K/D:</strong> 1.34 | <strong>ADR:</strong> 93.4 | <strong>KPR:</strong> 0.91</p>
+          <p><strong>DPR:</strong> 0.68 | <strong>KAST:</strong> 71.7%</p>
+        </div>
+
+        <div class="player-card">
+          <h2> Suv1337<small></small></h2>
+          <p>Wiek: 15 lat</p>
+          <p><strong>Rating 2.0:</strong> 1.23</p>
+          <p><strong>K/D:</strong> 1.22 | <strong>ADR:</strong> 88.7 | <strong>KPR:</strong> 0.83</p>
+          <p><strong>DPR:</strong> 0.68 | <strong>KAST:</strong> 69.5%</p>
+        </div>
+
+        <div class="player-card">
+          <h2>Wayferr<small></small></h2>
+          <p>Wiek: 16 lat</p>
+          <p><strong>Rating 2.0:</strong> 0.99</p>
+          <p><strong>K/D:</strong> 0.96 | <strong>ADR:</strong> 76.4 | <strong>KPR:</strong> 0.70</p>
+          <p><strong>DPR:</strong> 0.75 | <strong>KAST:</strong> 62.0%</p>
+        </div>
+
+        <div class="player-card">
+          <h2>wikokk1 <small></small></h2>
+          <p>Wiek: 16 lat</p>
+          <p><strong>Rating 2.0:</strong> 0.50</p>
+          <p><strong>K/D:</strong> 0.52 | <strong>ADR:</strong> 52.3 | <strong>KPR:</strong> 0.45</p>
+          <p><strong>DPR:</strong> 0.86 | <strong>KAST:</strong> 44.9%</p>
+        </div>
+
+        <div class="player-card">
+          <h2>Divsero <small></small></h2>
+          <p>Wiek: 16 lat</p>
+          <p><strong>Rating 2.0:</strong> 0.90</p>
+          <p><strong>K/D:</strong> 0.91 | <strong>ADR:</strong> 72.0 | <strong>KPR:</strong> 0.67</p>
+          <p><strong>DPR:</strong> 0.77 | <strong>KAST:</strong> 57.4%</p>
+        </div>
+
       </div>
     </div>
-  </section>
 
-  <section id="matches">
-    <h2>Nadchodzące mecze</h2>
-    <ul class="matches">
-      <li></li>
-      <li></li>
-      <li></li>
-    </ul>
-  </section>
+    <div id="matches" class="tab-content hidden">
+      <div class="team-title">Nadchodzące Mecze</div>
+      <p>Brak zaplanowanych meczów. Sprawdź ponownie później!</p>
+    </div>
+  </div>
 
-  <section id="contact">
-    <h2>Kontakt</h2>
-    <p></p>
-    <p></p>
-    <p></p>
-  </section>
+  <script>
+    function showTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+      document.getElementById(tabName).classList.remove('hidden');
 
-  <footer>
-    &copy; 2025 Mocne Knury. Wszelkie prawa zastrzeżone.
-  </footer>
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      document.querySelector(`.tab-button[onclick=\"showTab('${tabName}')\"]`).classList.add('active');
+    }
+  </script>
 </body>
 </html>
