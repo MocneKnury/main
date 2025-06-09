@@ -105,9 +105,10 @@
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
-    cursor: default;
+    cursor: pointer;
     flex-shrink: 0;
     width: 320px;
+    position: relative;
   }
   .player-card:hover {
     transform: translateY(-8px);
@@ -202,6 +203,21 @@
       padding: 0 15px;
     }
   }
+
+  /* NOWY STYL DLA DETALI */
+  .player-details {
+    background: #272727;
+    margin-top: 20px;
+    padding: 15px 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px #22c55eaa;
+    color: #a5f3a5;
+    font-size: 1rem;
+    user-select: none;
+  }
+  .player-details strong {
+    color: #22c55e;
+  }
 </style>
 </head>
 <body>
@@ -219,7 +235,7 @@
       <div class="team-title">Skład drużyny</div>
       <div class="player-grid">
 
-        <div class="player-card">
+        <div class="player-card" data-map="Dust2" data-weapon="AWP" onclick="toggleDetails(this)">
           <h2>SimplyKubuS-</h2>
           <p>Wiek: 15 lat</p>
           <p><strong>Rola:</strong> 🎯 AWPer</p>
@@ -234,9 +250,11 @@
             <div class="skill"><span>Clutching</span><div class="bar"><div class="fill" style="width: 70%;"></div></div></div>
             <div class="skill"><span>Utility</span><div class="bar"><div class="fill" style="width: 65%;"></div></div></div>
           </div>
+          <!-- szczegóły ukryte -->
+          <div class="player-details" style="display:none;"></div>
         </div>
 
-        <div class="player-card">
+        <div class="player-card" data-map="Mirage" data-weapon="M4A1-S" onclick="toggleDetails(this)">
           <h2>Suv1337</h2>
           <p>Wiek: 15 lat</p>
           <p><strong>Rola:</strong> 🛡️ Riffler / Support</p>
@@ -251,60 +269,66 @@
             <div class="skill"><span>Clutching</span><div class="bar"><div class="fill" style="width: 60%;"></div></div></div>
             <div class="skill"><span>Utility</span><div class="bar"><div class="fill" style="width: 60%;"></div></div></div>
           </div>
+          <div class="player-details" style="display:none;"></div>
         </div>
 
-        <div class="player-card">
+        <div class="player-card" data-map="Inferno" data-weapon="AK-47" onclick="toggleDetails(this)">
           <h2>Wayferr</h2>
           <p>Wiek: 16 lat</p>
           <p><strong>Rola:</strong> 🧠 IGL</p>
           <p><strong>Rating 2.0:</strong> 0.99</p>
           <p><strong>K/D:</strong> 0.96 | <strong>ADR:</strong> 76.4 | <strong>KPR:</strong> 0.70</p>
-          <p><strong>DPR:</strong> 0.75 | <strong>KAST:</strong> 62.0%</p>
+          <p><strong>DPR:</strong> 0.75 | <strong>KAST:</strong> 62.4%</p>
           <div class="skills">
-            <div class="skill"><span>Firepower</span><div class="bar"><div class="fill" style="width: 70%;"></div></div></div>
-            <div class="skill"><span>Entry</span><div class="bar"><div class="fill" style="width: 60%;"></div></div></div>
-            <div class="skill"><span>Opening</span><div class="bar"><div class="fill" style="width: 65%;"></div></div></div>
-            <div class="skill"><span>Sniping</span><div class="bar"><div class="fill" style="width: 50%;"></div></div></div>
-            <div class="skill"><span>Clutching</span><div class="bar"><div class="fill" style="width: 55%;"></div></div></div>
-            <div class="skill"><span>Utility</span><div class="bar"><div class="fill" style="width: 50%;"></div></div></div>
+            <div class="skill"><span>Firepower</span><div class="bar"><div class="fill" style="width: 65%;"></div></div></div>
+            <div class="skill"><span>Entry</span><div class="bar"><div class="fill" style="width: 55%;"></div></div></div>
+            <div class="skill"><span>Opening</span><div class="bar"><div class="fill" style="width: 55%;"></div></div></div>
+            <div class="skill"><span>Sniping</span><div class="bar"><div class="fill" style="width: 45%;"></div></div></div>
+            <div class="skill"><span>Clutching</span><div class="bar"><div class="fill" style="width: 60%;"></div></div></div>
+            <div class="skill"><span>Utility</span><div class="bar"><div class="fill" style="width: 60%;"></div></div></div>
           </div>
+          <div class="player-details" style="display:none;"></div>
         </div>
 <!-- wikokk1 -->
-        <div class="player-card">
-          <h2>wikokk1</h2>
-          <p>Wiek: 16 lat</p>
-          <p><strong>Rola:</strong> 🛡️ Riffler / Support</p>
-          <p><strong>Rating 2.0:</strong> 0.50</p>
-          <p><strong>K/D:</strong> 0.52 | <strong>ADR:</strong> 52.3 | <strong>KPR:</strong> 0.45</p>
-          <p><strong>DPR:</strong> 0.86 | <strong>KAST:</strong> 44.9%</p>
-          <div class="skills">
-            <div class="skill"><span>Firepower</span><div class="bar"><div class="fill" style="width: 35%;"></div></div></div>
-            <div class="skill"><span>Entry</span><div class="bar"><div class="fill" style="width: 40%;"></div></div></div>
-            <div class="skill"><span>Opening</span><div class="bar"><div class="fill" style="width: 30%;"></div></div></div>
-            <div class="skill"><span>Sniping</span><div class="bar"><div class="fill" style="width: 10%;"></div></div></div>
-            <div class="skill"><span>Clutching</span><div class="bar"><div class="fill" style="width: 30%;"></div></div></div>
-            <div class="skill"><span>Utility</span><div class="bar"><div class="fill" style="width: 50%;"></div></div></div>
-          </div>
-        </div>
+<div class="player-card" data-map="Nuke" data-weapon="Galil" onclick="toggleDetails(this)">
+  <h2>wikokk1</h2>
+  <p>Wiek: 16 lat</p>
+  <p><strong>Rola:</strong> 🛡️ Riffler / Support</p>
+  <p><strong>Rating 2.0:</strong> 0.50</p>
+  <p><strong>K/D:</strong> 0.52 | <strong>ADR:</strong> 52.3 | <strong>KPR:</strong> 0.45</p>
+  <p><strong>DPR:</strong> 0.86 | <strong>KAST:</strong> 44.9%</p>
+  <div class="skills">
+    <div class="skill"><span>Firepower</span><div class="bar"><div class="fill" style="width: 35%;"></div></div></div>
+    <div class="skill"><span>Entry</span><div class="bar"><div class="fill" style="width: 40%;"></div></div></div>
+    <div class="skill"><span>Opening</span><div class="bar"><div class="fill" style="width: 30%;"></div></div></div>
+    <div class="skill"><span>Sniping</span><div class="bar"><div class="fill" style="width: 10%;"></div></div></div>
+    <div class="skill"><span>Clutching</span><div class="bar"><div class="fill" style="width: 30%;"></div></div></div>
+    <div class="skill"><span>Utility</span><div class="bar"><div class="fill" style="width: 50%;"></div></div></div>
+  </div>
+  <div class="player-details" style="display:none;"></div>
+</div>
 
-        <!-- Divsero -->
-        <div class="player-card">
-          <h2>Divsero</h2>
-          <p>Wiek: 16 lat</p>
-          <p><strong>Rola:</strong> 🚪 Entry Fragger</p>
-          <p><strong>Rating 2.0:</strong> 0.90</p>
-          <p><strong>K/D:</strong> 0.91 | <strong>ADR:</strong> 72.0 | <strong>KPR:</strong> 0.67</p>
-          <p><strong>DPR:</strong> 0.77 | <strong>KAST:</strong> 57.4%</p>
-          <div class="skills">
-            <div class="skill"><span>Firepower</span><div class="bar"><div class="fill" style="width: 75%;"></div></div></div>
-            <div class="skill"><span>Entry</span><div class="bar"><div class="fill" style="width: 80%;"></div></div></div>
-            <div class="skill"><span>Opening</span><div class="bar"><div class="fill" style="width: 70%;"></div></div></div>
-            <div class="skill"><span>Sniping</span><div class="bar"><div class="fill" style="width: 15%;"></div></div></div>
-            <div class="skill"><span>Clutching</span><div class="bar"><div class="fill" style="width: 45%;"></div></div></div>
-            <div class="skill"><span>Utility</span><div class="bar"><div class="fill" style="width: 50%;"></div></div></div>
-          </div>
-        </div>
-        <div class="player-card">
+<!-- Divsero -->
+<div class="player-card" data-map="Train" data-weapon="FAMAS" onclick="toggleDetails(this)">
+  <h2>Divsero</h2>
+  <p>Wiek: 16 lat</p>
+  <p><strong>Rola:</strong> 🚪 Entry Fragger</p>
+  <p><strong>Rating 2.0:</strong> 0.90</p>
+  <p><strong>K/D:</strong> 0.91 | <strong>ADR:</strong> 72.0 | <strong>KPR:</strong> 0.67</p>
+  <p><strong>DPR:</strong> 0.77 | <strong>KAST:</strong> 57.4%</p>
+  <div class="skills">
+    <div class="skill"><span>Firepower</span><div class="bar"><div class="fill" style="width: 75%;"></div></div></div>
+    <div class="skill"><span>Entry</span><div class="bar"><div class="fill" style="width: 80%;"></div></div></div>
+    <div class="skill"><span>Opening</span><div class="bar"><div class="fill" style="width: 70%;"></div></div></div>
+    <div class="skill"><span>Sniping</span><div class="bar"><div class="fill" style="width: 15%;"></div></div></div>
+    <div class="skill"><span>Clutching</span><div class="bar"><div class="fill" style="width: 45%;"></div></div></div>
+    <div class="skill"><span>Utility</span><div class="bar"><div class="fill" style="width: 50%;"></div></div></div>
+  </div>
+  <div class="player-details" style="display:none;"></div>
+</div>
+
+<!-- Gawlaswp -->
+<div class="player-card" data-map="Overpass" data-weapon="Desert Eagle" onclick="toggleDetails(this)">
   <h2>Gawlaswp</h2>
   <p>Wiek: 15 lat</p>
   <p><strong>Rola:</strong> 🎓 Coach</p>
@@ -316,6 +340,7 @@
     <div class="skill"><span>Motywacja</span><div class="bar"><div class="fill" style="width: 80%;"></div></div></div>
     <div class="skill"><span>Analiza</span><div class="bar"><div class="fill" style="width: 90%;"></div></div></div>
   </div>
+  <div class="player-details" style="display:none;"></div>
 </div>
 
       </div>
@@ -323,22 +348,42 @@
 
     <div id="matches" class="tab-content hidden">
       <div class="team-title">Nadchodzące mecze</div>
-      <p>Brak zaplanowanych meczów.</p>
+      <p>Brak danych o nadchodzących meczach.</p>
     </div>
   </div>
 
-  <script>
-    function showTab(tabName) {
-      const tabs = document.querySelectorAll('.tab-content');
-      const buttons = document.querySelectorAll('.tab-button');
-      tabs.forEach(tab => {
-        tab.classList.toggle('hidden', tab.id !== tabName);
-      });
-      buttons.forEach(btn => {
-        btn.classList.toggle('active', btn.textContent.toLowerCase() === tabName);
-      });
+<script>
+  // Przełączanie tabów
+  function showTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(tab => {
+      tab.classList.toggle('hidden', tab.id !== tabId);
+    });
+    document.querySelectorAll('.nav-tabs button').forEach(btn => {
+      btn.classList.toggle('active', btn.textContent.toLowerCase() === tabId);
+    });
+  }
+
+  // Pokazuje/ukrywa szczegóły ulubionej mapy i broni
+  function toggleDetails(card) {
+    const detailsDiv = card.querySelector('.player-details');
+    if (!detailsDiv) return;
+
+    if (detailsDiv.style.display === 'block') {
+      // schowaj, jeśli już widoczne
+      detailsDiv.style.display = 'none';
+      return;
     }
-  </script>
+
+    // wypełnij danymi z atrybutów data-*
+    const favoriteMap = card.getAttribute('data-map');
+    const favoriteWeapon = card.getAttribute('data-weapon');
+
+    detailsDiv.innerHTML = `
+      <strong>Ulubiona mapa:</strong> ${favoriteMap}<br />
+      <strong>Ulubiona broń:</strong> ${favoriteWeapon}
+    `;
+    detailsDiv.style.display = 'block';
+  }
+</script>
 </body>
 </html>
-
