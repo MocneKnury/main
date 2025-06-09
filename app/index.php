@@ -25,6 +25,7 @@
     padding: 25px 50px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     border-bottom: 4px solid #22c55e;
     box-shadow: 0 3px 8px rgba(34, 197, 94, 0.4);
     position: sticky;
@@ -37,6 +38,29 @@
     margin: 0;
     text-shadow: 0 0 8px #22c55e;
     letter-spacing: 2px;
+  }
+  /* Logowanie button */
+  .login-button {
+    background: transparent;
+    border: 2.5px solid #22c55e;
+    color: #22c55e;
+    padding: 10px 26px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 30px;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 0 8px #22c55e;
+    transition: all 0.3s ease;
+    user-select: none;
+    white-space: nowrap;
+  }
+  .login-button:hover,
+  .login-button:focus {
+    background: #22c55e;
+    color: #111;
+    box-shadow: 0 0 20px #22c55e;
+    outline: none;
   }
   /* NAV TABS */
   .nav-tabs {
@@ -130,6 +154,15 @@
   .player-card p strong {
     color: #86efac;
   }
+  /* FACEIT LEVEL */
+  .faceit-level {
+    margin-top: 6px;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #22c55e;
+    text-shadow: 0 0 6px #22c55e;
+    user-select: none;
+  }
   /* SKILLS */
   .skills {
     margin-top: 18px;
@@ -163,6 +196,37 @@
     transition: width 0.5s ease;
     box-shadow: 0 0 8px #22c55e;
   }
+  /* BENCH PLAYER CARD */
+  .bench-player-card {
+    background: #1f1f1f;
+    border-radius: 15px;
+    padding: 20px 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    width: 320px;
+    color: #cbd5e1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .bench-player-card label {
+    font-weight: 600;
+    color: #22c55e;
+    user-select: none;
+  }
+  .bench-player-card input[type="text"] {
+    background: #121212;
+    border: 1.5px solid #22c55e;
+    border-radius: 8px;
+    color: #e5e5e5;
+    padding: 8px 12px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  .bench-player-card input[type="text"]:focus {
+    border-color: #86efac;
+    box-shadow: 0 0 8px #22c55eaa;
+  }
   /* TAB CONTENT */
   .tab-content.hidden {
     display: none;
@@ -182,20 +246,24 @@
     }
     .nav-tabs {
       gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
     .nav-tabs button {
       padding: 10px 16px;
       font-size: 1rem;
+      flex-grow: 1;
+      max-width: 180px;
     }
     /* Na małym ekranie układ jednokolumnowy */
-    .player-grid {
+    .player-grid, #bench .bench-grid {
       display: grid;
       grid-template-columns: 1fr;
       gap: 20px;
       overflow-x: visible;
       padding-bottom: 0;
     }
-    .player-card {
+    .player-card, .bench-player-card {
       width: 100%;
       flex-shrink: 1;
     }
@@ -223,10 +291,12 @@
 <body>
   <header>
     <h1>Mocne Knury Esport</h1>
+    <a href="logowanie.php" class="login-button" aria-label="Przejdź do logowania">Logowanie</a>
   </header>
 
   <div class="nav-tabs">
     <button class="tab-button active" onclick="showTab('roster')">Skład</button>
+    <button class="tab-button" onclick="showTab('bench')">Ławka</button>
     <button class="tab-button" onclick="showTab('matches')">Mecze</button>
   </div>
 
@@ -240,6 +310,7 @@
           <p>Wiek: 15 lat</p>
           <p><strong>Rola:</strong> 🎯 AWPer</p>
           <p><strong>Rating 2.0:</strong> 1.33</p>
+          <div class="faceit-level">💎 lvl7</div>
           <p><strong>K/D:</strong> 1.34 | <strong>ADR:</strong> 93.4 | <strong>KPR:</strong> 0.91</p>
           <p><strong>DPR:</strong> 0.68 | <strong>KAST:</strong> 71.7%</p>
           <div class="skills">
@@ -259,6 +330,7 @@
           <p>Wiek: 15 lat</p>
           <p><strong>Rola:</strong> 🛡️ Riffler / Support</p>
           <p><strong>Rating 2.0:</strong> 1.23</p>
+          <div class="faceit-level">💎 lvl7</div>
           <p><strong>K/D:</strong> 1.22 | <strong>ADR:</strong> 88.7 | <strong>KPR:</strong> 0.83</p>
           <p><strong>DPR:</strong> 0.68 | <strong>KAST:</strong> 69.5%</p>
           <div class="skills">
@@ -277,6 +349,7 @@
           <p>Wiek: 16 lat</p>
           <p><strong>Rola:</strong> 🧠 IGL</p>
           <p><strong>Rating 2.0:</strong> 0.99</p>
+          <div class="faceit-level">🔷 lvl6</div>
           <p><strong>K/D:</strong> 0.96 | <strong>ADR:</strong> 76.4 | <strong>KPR:</strong> 0.70</p>
           <p><strong>DPR:</strong> 0.75 | <strong>KAST:</strong> 62.4%</p>
           <div class="skills">
@@ -289,60 +362,87 @@
           </div>
           <div class="player-details" style="display:none;"></div>
         </div>
-<!-- wikokk1 -->
-<div class="player-card" data-map="Nuke" data-weapon="Galil" onclick="toggleDetails(this)">
-  <h2>wikokk1</h2>
-  <p>Wiek: 16 lat</p>
-  <p><strong>Rola:</strong> 🛡️ Riffler / Support</p>
-  <p><strong>Rating 2.0:</strong> 0.50</p>
-  <p><strong>K/D:</strong> 0.52 | <strong>ADR:</strong> 52.3 | <strong>KPR:</strong> 0.45</p>
-  <p><strong>DPR:</strong> 0.86 | <strong>KAST:</strong> 44.9%</p>
-  <div class="skills">
-    <div class="skill"><span>Firepower</span><div class="bar"><div class="fill" style="width: 35%;"></div></div></div>
-    <div class="skill"><span>Entry</span><div class="bar"><div class="fill" style="width: 40%;"></div></div></div>
-    <div class="skill"><span>Opening</span><div class="bar"><div class="fill" style="width: 30%;"></div></div></div>
-    <div class="skill"><span>Sniping</span><div class="bar"><div class="fill" style="width: 10%;"></div></div></div>
-    <div class="skill"><span>Clutching</span><div class="bar"><div class="fill" style="width: 30%;"></div></div></div>
-    <div class="skill"><span>Utility</span><div class="bar"><div class="fill" style="width: 50%;"></div></div></div>
-  </div>
-  <div class="player-details" style="display:none;"></div>
-</div>
 
-<!-- Divsero -->
-<div class="player-card" data-map="Train" data-weapon="FAMAS" onclick="toggleDetails(this)">
-  <h2>Divsero</h2>
-  <p>Wiek: 16 lat</p>
-  <p><strong>Rola:</strong> 🚪 Entry Fragger</p>
-  <p><strong>Rating 2.0:</strong> 0.90</p>
-  <p><strong>K/D:</strong> 0.91 | <strong>ADR:</strong> 72.0 | <strong>KPR:</strong> 0.67</p>
-  <p><strong>DPR:</strong> 0.77 | <strong>KAST:</strong> 57.4%</p>
-  <div class="skills">
-    <div class="skill"><span>Firepower</span><div class="bar"><div class="fill" style="width: 75%;"></div></div></div>
-    <div class="skill"><span>Entry</span><div class="bar"><div class="fill" style="width: 80%;"></div></div></div>
-    <div class="skill"><span>Opening</span><div class="bar"><div class="fill" style="width: 70%;"></div></div></div>
-    <div class="skill"><span>Sniping</span><div class="bar"><div class="fill" style="width: 15%;"></div></div></div>
-    <div class="skill"><span>Clutching</span><div class="bar"><div class="fill" style="width: 45%;"></div></div></div>
-    <div class="skill"><span>Utility</span><div class="bar"><div class="fill" style="width: 50%;"></div></div></div>
-  </div>
-  <div class="player-details" style="display:none;"></div>
-</div>
+        <!-- wikokk1 -->
+        <div class="player-card" data-map="Nuke" data-weapon="Galil" onclick="toggleDetails(this)">
+          <h2>wikokk1</h2>
+          <p>Wiek: 16 lat</p>
+          <p><strong>Rola:</strong> 🛡️ Riffler / Support</p>
+          <p><strong>Rating 2.0:</strong> 0.50</p>
+          <div class="faceit-level">⭐ lvl2</div>
+          <p><strong>K/D:</strong> 0.52 | <strong>ADR:</strong> 52.3 | <strong>KPR:</strong> 0.45</p>
+          <p><strong>DPR:</strong> 0.86 | <strong>KAST:</strong> 44.9%</p>
+          <div class="skills">
+            <div class="skill"><span>Firepower</span><div class="bar"><div class="fill" style="width: 35%;"></div></div></div>
+            <div class="skill"><span>Entry</span><div class="bar"><div class="fill" style="width: 40%;"></div></div></div>
+            <div class="skill"><span>Opening</span><div class="bar"><div class="fill" style="width: 30%;"></div></div></div>
+            <div class="skill"><span>Sniping</span><div class="bar"><div class="fill" style="width: 10%;"></div></div></div>
+            <div class="skill"><span>Clutching</span><div class="bar"><div class="fill" style="width: 30%;"></div></div></div>
+            <div class="skill"><span>Utility</span><div class="bar"><div class="fill" style="width: 50%;"></div></div></div>
+          </div>
+          <div class="player-details" style="display:none;"></div>
+        </div>
 
-<!-- Gawlaswp -->
-<div class="player-card" data-map="Overpass" data-weapon="Desert Eagle" onclick="toggleDetails(this)">
-  <h2>Gawlaswp</h2>
-  <p>Wiek: 15 lat</p>
-  <p><strong>Rola:</strong> 🎓 Coach</p>
-  <p><strong>Rating 2.0:</strong> -</p>
-  <p><strong>K/D:</strong> - | <strong>ADR:</strong> - | <strong>KPR:</strong> -</p>
-  <p><strong>DPR:</strong> - | <strong>KAST:</strong> -</p>
-  <div class="skills">
-    <div class="skill"><span>Strategia</span><div class="bar"><div class="fill" style="width: 85%;"></div></div></div>
-    <div class="skill"><span>Motywacja</span><div class="bar"><div class="fill" style="width: 80%;"></div></div></div>
-    <div class="skill"><span>Analiza</span><div class="bar"><div class="fill" style="width: 90%;"></div></div></div>
-  </div>
-  <div class="player-details" style="display:none;"></div>
-</div>
+        <!-- Divsero -->
+        <div class="player-card" data-map="Train" data-weapon="FAMAS" onclick="toggleDetails(this)">
+          <h2>Divsero</h2>
+          <p>Wiek: 16 lat</p>
+          <p><strong>Rola:</strong> 🚪 Entry Fragger</p>
+          <p><strong>Rating 2.0:</strong> 0.90</p>
+          <div class="faceit-level">⭐ lvl3</div>
+          <p><strong>K/D:</strong> 0.91 | <strong>ADR:</strong> 72.0 | <strong>KPR:</strong> 0.67</p>
+          <p><strong>DPR:</strong> 0.77 | <strong>KAST:</strong> 57.4%</p>
+          <div class="skills">
+            <div class="skill"><span>Firepower</span><div class="bar"><div class="fill" style="width: 75%;"></div></div></div>
+            <div class="skill"><span>Entry</span><div class="bar"><div class="fill" style="width: 80%;"></div></div></div>
+            <div class="skill"><span>Opening</span><div class="bar"><div class="fill" style="width: 70%;"></div></div></div>
+            <div class="skill"><span>Sniping</span><div class="bar"><div class="fill" style="width: 15%;"></div></div></div>
+            <div class="skill"><span>Clutching</span><div class="bar"><div class="fill" style="width: 45%;"></div></div></div>
+            <div class="skill"><span>Utility</span><div class="bar"><div class="fill" style="width: 50%;"></div></div></div>
+          </div>
+          <div class="player-details" style="display:none;"></div>
+        </div>
 
+        <!-- Gawlaswp -->
+        <div class="player-card" data-map="Overpass" data-weapon="Desert Eagle" onclick="toggleDetails(this)">
+          <h2>Gawlaswp</h2>
+          <p>Wiek: 15 lat</p>
+          <p><strong>Rola:</strong> 🎓 Coach</p>
+          <p><strong>Rating 2.0:</strong> -</p>
+          <p><strong>K/D:</strong> - | <strong>ADR:</strong> - | <strong>KPR:</strong> -</p>
+          <p><strong>DPR:</strong> - | <strong>KAST:</strong> -</p>
+          <div class="skills">
+            <div class="skill"><span>Strategia</span><div class="bar"><div class="fill" style="width: 85%;"></div></div></div>
+            <div class="skill"><span>Motywacja</span><div class="bar"><div class="fill" style="width: 80%;"></div></div></div>
+            <div class="skill"><span>Analiza</span><div class="bar"><div class="fill" style="width: 90%;"></div></div></div>
+          </div>
+          <div class="player-details" style="display:none;"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="bench" class="tab-content hidden">
+      <div class="team-title">Ławka rezerwowych</div>
+      <div class="bench-grid">
+       <div class="player-card" data-map="Mirage" data-weapon="AK-47" onclick="toggleDetails(this)">
+          <h2>Byczeq222</h2>
+          <p>Wiek: 17 lat</p>
+          <p><strong>Rola:</strong>🚪 Entry Fragger</p>
+          <p><strong>Rating 2.0:</strong> 0.82</p>
+          <div class="faceit-level">⭐ lvl4</div>
+          <p><strong>K/D:</strong> 0.75 | <strong>ADR:</strong> 66.1 | <strong>KPR:</strong> 0.59</p>
+          <p><strong>DPR:</strong> 0.77 | <strong>KAST:</strong> 57.6%</p>
+          <div class="skills">
+            <div class="skill"><span>Firepower</span><div class="bar"><div class="fill" style="width: 75%;"></div></div></div>
+            <div class="skill"><span>Entry</span><div class="bar"><div class="fill" style="width: 80%;"></div></div></div>
+            <div class="skill"><span>Opening</span><div class="bar"><div class="fill" style="width: 70%;"></div></div></div>
+            <div class="skill"><span>Sniping</span><div class="bar"><div class="fill" style="width: 15%;"></div></div></div>
+            <div class="skill"><span>Clutching</span><div class="bar"><div class="fill" style="width: 45%;"></div></div></div>
+            <div class="skill"><span>Utility</span><div class="bar"><div class="fill" style="width: 50%;"></div></div></div>
+          </div>
+          <div class="player-details" style="display:none;"></div>
+        </div>
       </div>
     </div>
 
