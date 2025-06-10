@@ -50,7 +50,7 @@ if (!$fetch_result || $fetch_result['status'] !== 200 || empty($fetch_result['bo
     exit('Player Suv1337 not found in database or error fetching data.');
 }
 
-$player = $fetch_result['body'][0];
+$player = $fetch_result['body'][6];
 
 // Initialize messages
 $success = $error = '';
